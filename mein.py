@@ -1,10 +1,10 @@
-import telebot
+import telebot # тут ми потключайм библиотеку телебот 
 from telebot.types import Message
 from keras.models import load_model
 from PIL import Image, ImageOps
 import numpy as np
 
-def detect_image(input_path, model):
+def detect_image(input_path, model): # ета уже обучиная модель которая можить различить пустини
     np.set_printoptions(suppress=True)
     model = load_model(model, compile=False)
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
@@ -23,16 +23,16 @@ def detect_image(input_path, model):
 
 
 
-bot = telebot.TeleBot('7599857661:AAHWlUfZJKY2f-2B4YebidqtZA6lPFhpEqc')
+bot = telebot.TeleBot('') # тут ви должни подставить индекс своего бота
 
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start'])# если напишуть /start то появиться натпись
 def start(message: Message):
-    bot.send_message(message.chat.id, 'я умею различать страни')
+    bot.send_message(message.chat.id, 'я умею различать пустини') #вот ета
 
 
-@bot.message_handler(content_types=['photo'])
+@bot.message_handler(content_types=['photo'])# вот тут будет проверять фото
 def photo(message: Message):
     if not message.photo:
         return bot.send_message(message.chat.id, 'ви не скинули картинку')
@@ -43,9 +43,9 @@ def photo(message: Message):
     with open(f'images/{message.from_user.id}.png', 'wb') as new_file:
         new_file.write(downloaded_file)
     old = bot.send_message(message.chat.id, 'кaртинка получина/')
-    index, score = detect_image(f"images/{message.from_user.id}.png", "keras_model.h5")
+    index, score = detect_image(f"images/{message.from_user.id}.png", "")# ви должнибудете потставить здесь свой модуль
     bot.delete_message(old.chat.id,old.message_id)
-    if index == 0:
+    if index == 0: #  тут оно ишит индекс тех картинак каторих ви обучили в модуле
         bot.send_message(message.chat.id, f'ваша картинка пустиня  с вероятностью {score * 100}%')
     elif index == 1:
         bot.send_message(message.chat.id, f'ваша картинка ледяная пустиня  с вероятностью {score * 100}%')
